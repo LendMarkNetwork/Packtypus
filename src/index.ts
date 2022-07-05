@@ -2,8 +2,9 @@ import express from 'express';
 import fileUpload, { UploadedFile } from 'express-fileupload';
 import toml from 'toml';
 import { join } from 'node:path';
-import { readFileSync } from 'node:fs';
+import { readFileSync, mkdirSync, existsSync } from 'node:fs';
 import type { ConfigOptions } from './types/config';
+import { getHash } from './utils/pack';
 
 const config: ConfigOptions = toml.parse(
 	readFileSync(join(__dirname, '..', 'config.toml')).toString(),
@@ -20,23 +21,34 @@ app.post('/upload', (req, res) => {
     if (!config.whitelistedIps.includes(ip)) return res.status(401).json({ message: "Bad request" });
     if (!req.files.pack) return res.status(401).json({ message: "Bad request" });
 
-    const spigotId = req.body.id;
+    const spigotId = req.body?.id;
     const pack: UploadedFile = req.files.pack as UploadedFile;
 
-    // TODO: Finish url, sha1
+    // TODO: finish url
+    const hash = getHash(pack.data.toString());
+    const resourcePath = join(__dirname, '..', 'resources', hash);
 
-    pack.mv(join(__dirname, '..', 'resources', 'pack.zip'), () => {
+    if (!existsSync(resourcePath)) mkdirSync(resourcePath);
+
+    pack.mv(join(resourcePath, 'pack.zip'), () => {
         return res.status(200).json({
-            url: "",
-            sha1: "",
+            url: `${config.url}/pack.zip?id=${hash}`,
+            sha1: hash,
         })
     })
 })
 
-app.get('/download', (req, res) => {
-    // TODO: finish download
+app.get('/pack.zip', (req, res) => {
+    const id: string = (req.query as any)?.id as string;
+    if (!id) return res.status(401).json({ message: "Bad request" });
+
+    const resourcePath = join(__dirname, '..', 'resources', id);
+    if (!existsSync(resourcePath)) return res.status(401).json({ message: "Bad request" });
+
+    res.setHeader('content-type', 'application/zip');
+    res.end(readFileSync(join(resourcePath, 'pack.zip')));
 })
 
 app.listen(config.port, () => {
-	console.log('🚀 Server is running on port 8989');
+	console.log('🚀 Server is running on port ' + config.port);
 });
