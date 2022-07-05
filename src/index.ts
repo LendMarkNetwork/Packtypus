@@ -24,7 +24,7 @@ app.post('/upload', (req, res) => {
     const spigotId = req.body?.id;
     const pack: UploadedFile = req.files.pack as UploadedFile;
 
-    // TODO: finish url
+    // TODO: handle spigotId
     const hash = getHash(pack.data.toString());
     const resourcePath = join(__dirname, '..', 'resources', hash);
 
