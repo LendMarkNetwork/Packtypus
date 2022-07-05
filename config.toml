@@ -1,0 +1,7 @@
+# Settings for application
+
+port = 8080
+whitelistedIps = [
+    "xx",
+    "xx"
+]

@@ -1,0 +1,35 @@
+{
+  "name": "packtypus",
+  "version": "1.0.0",
+  "description": "A TypeScript server to host oraxen resource packs",
+  "main": "index.js",
+  "scripts": {
+    "build": "tsc -p .",
+    "dev": "npm run build && npm start",
+    "start": "node ./dist/index.js",
+    "lint": "eslint .",
+    "lint:fix": "eslint . --fix",
+    "format": "prettier --write src/**/*.ts"
+  },
+  "keywords": [],
+  "author": "xHyroM",
+  "license": "MIT",
+  "devDependencies": {
+    "@types/express": "^4.17.13",
+    "@types/express-fileupload": "^1.2.2",
+    "@typescript-eslint/eslint-plugin": "^5.30.5",
+    "@typescript-eslint/parser": "^5.30.5",
+    "eslint": "^8.19.0",
+    "eslint-config-prettier": "^8.5.0",
+    "eslint-plugin-import": "^2.26.0",
+    "eslint-plugin-prettier": "^4.2.1",
+    "prettier": "^2.7.1",
+    "typescript": "^4.6.3"
+  },
+  "dependencies": {
+    "express": "^4.18.1",
+    "express-fileupload": "^1.4.0",
+    "toml": "^3.0.0",
+    "toml-node": "^0.0.1"
+  }
+}
