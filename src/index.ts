@@ -13,7 +13,7 @@ const config: ConfigOptions = toml.parse(
 const app = express();
 app.set('trust proxy', true);
 app.use(fileUpload({
-    limits: { fileSize: 50 * 1024 * 1024 },
+    limits: { fileSize: 100000000 },
 }));
 
 app.post('/upload', (req, res) => {
@@ -26,7 +26,7 @@ app.post('/upload', (req, res) => {
 
     // TODO: handle spigotId
     const hash = getHash(pack.data.toString());
-    const resourcePath = join(__dirname, '..', 'resources', hash);
+    const resourcePath = join(__dirname, '..', 'storage', hash);
 
     if (!existsSync(resourcePath)) mkdirSync(resourcePath);
 
@@ -42,7 +42,7 @@ app.get('/pack.zip', (req, res) => {
     const id: string = (req.query as any)?.id as string;
     if (!id) return res.status(401).json({ message: "Bad request" });
 
-    const resourcePath = join(__dirname, '..', 'resources', id);
+    const resourcePath = join(__dirname, '..', 'storage', id);
     if (!existsSync(resourcePath)) return res.status(401).json({ message: "Bad request" });
 
     res.setHeader('content-type', 'application/zip');
