@@ -32,13 +32,13 @@ app.post('/upload', (req, res) => {
     if (!existsSync(resourcePath)) mkdirSync(resourcePath);
 
     pack.mv(join(resourcePath, 'pack.zip'), () => {
+        console.log("Pack uploaded from " + ip + " on " + `${config.url}/pack.zip?id=${hash}`);
+
         return res.status(200).json({
-            browserUrl: `${config.url}/pack.zip?id=${hash}`,
-            url: `${config.url}pack.zip?id=${hash}`,
+            url: `${config.url}/pack.zip?id=${hash}`,
             sha1: hash,
         })
     })
-        console.log("Pack uploaded from " + ip + " on " + `${config.url}pack.zip?id=${hash}`)
 })
 
 app.get('/pack.zip', (req, res) => {
