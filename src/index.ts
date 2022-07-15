@@ -33,6 +33,7 @@ app.post('/upload', (req, res) => {
 
     pack.mv(join(resourcePath, 'pack.zip'), () => {
         return res.status(200).json({
+            browserUrl: `${config.url}/pack.zip?id=${hash}`,
             url: `${config.url}pack.zip?id=${hash}`,
             sha1: hash,
         })
@@ -47,8 +48,14 @@ app.get('/pack.zip', (req, res) => {
     const resourcePath = join(__dirname, '..', 'storage', id);
     if (!existsSync(resourcePath)) return res.status(401).json({ message: "Bad request" });
 
-    res.setHeader('content-type', 'application/zip');
-    res.end(readFileSync(join(resourcePath, 'pack.zip')));
+    const zip = readFileSync(join(resourcePath, 'pack.zip'));
+
+    res.set({
+        'Content-Disposition': 'attachment; filename="pack.zip"',
+        'Content-Type': 'application/zip',
+        'Content-Length': zip.length,
+    })
+    res.end(zip);
 })
 
 app.listen(config.port, () => {
