@@ -33,9 +33,7 @@ app.post('/upload', async(req, res) => {
     if (!existsSync(resourcePath)) mkdirSync(resourcePath);
 
     pack.mv(join(resourcePath, 'pack.zip'), () => {
-        console.log('hash', hash)
-
-        console.log("Pack uploaded from " + ip + " on " + `${config.url}/pack.zip?id=${hash}`);
+        console.log("Pack uploaded from " + ip + " on " + `${config.url}/pack.zip?id=${hash}` + " with hash " + hash);
 
         return res.status(200).json({
             url: `${config.url}/pack.zip?id=${hash}`,
