@@ -1,6 +1,6 @@
-import crypto from 'crypto';
+import type { UploadedFile } from 'express-fileupload';
 
-export const getHash = (pack: string) => {
-    const hash = crypto.createHash('sha1').update(pack).digest('hex');
-    return hash
+export const getHash = (pack: UploadedFile) => {
+    // @ts-expect-error types are not correct
+    return pack.sha1;
 }

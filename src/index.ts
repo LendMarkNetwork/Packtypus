@@ -2,7 +2,7 @@ import express from 'express';
 import fileUpload, { UploadedFile } from 'express-fileupload';
 import toml from 'toml';
 import { join } from 'node:path';
-import { readFileSync, mkdirSync, existsSync } from 'node:fs';
+import { readFileSync, mkdirSync, existsSync, createReadStream } from 'node:fs';
 import type { ConfigOptions } from './types/config';
 import { getHash } from './utils/pack';
 
@@ -14,9 +14,10 @@ const app = express();
 app.set('trust proxy', true);
 app.use(fileUpload({
     limits: { fileSize: 100000000 },
+    hashAlgorithm: 'sha1',
 }));
 
-app.post('/upload', (req, res) => {
+app.post('/upload', async(req, res) => {
     const ip: string = (req.headers['x-forwarded-for'] || req.socket.remoteAddress) as string;
     
     if (!config.whitelistedIps.includes(ip)) return res.status(401).json({ message: "Bad request" });
@@ -26,12 +27,14 @@ app.post('/upload', (req, res) => {
     const pack: UploadedFile = req.files.pack as UploadedFile;
 
     // TODO: handle spigotId
-    const hash = getHash(pack.data.toString());
+    const hash = await getHash(pack);
     const resourcePath = join(__dirname, '..', 'storage', hash);
 
     if (!existsSync(resourcePath)) mkdirSync(resourcePath);
 
     pack.mv(join(resourcePath, 'pack.zip'), () => {
+        console.log('hash', hash)
+
         console.log("Pack uploaded from " + ip + " on " + `${config.url}/pack.zip?id=${hash}`);
 
         return res.status(200).json({
