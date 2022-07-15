@@ -18,6 +18,7 @@ app.use(fileUpload({
 
 app.post('/upload', (req, res) => {
     const ip: string = (req.headers['x-forwarded-for'] || req.socket.remoteAddress) as string;
+    
     if (!config.whitelistedIps.includes(ip)) return res.status(401).json({ message: "Bad request" });
     if (!req.files.pack) return res.status(401).json({ message: "Bad request" });
 
@@ -32,10 +33,11 @@ app.post('/upload', (req, res) => {
 
     pack.mv(join(resourcePath, 'pack.zip'), () => {
         return res.status(200).json({
-            url: `${config.url}/pack.zip?id=${hash}`,
+            url: `${config.url}pack.zip?id=${hash}`,
             sha1: hash,
         })
     })
+        console.log("Pack uploaded from " + ip + " on " + `${config.url}pack.zip?id=${hash}`)
 })
 
 app.get('/pack.zip', (req, res) => {
